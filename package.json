@@ -73,6 +73,7 @@
   },
   "homepage": "https://librechat.ai/",
   "devDependencies": {
+    "@supabase/supabase-js": "^1.28.5",
     "@axe-core/playwright": "^4.9.1",
     "@playwright/test": "^1.38.1",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
