@@ -19,14 +19,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Fetch all history for all tags and branches
 
-      - name: Get latest tag
-        id: get_latest_tag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
-        with:
-          fallback: v0.0.0  # Fallback tag to use when no tag can be found
+      - name: Fetch tags and set the latest tag
+        run: |
+          git fetch --tags
+          echo "LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)" >> $GITHUB_ENV
 
       # Set up QEMU
       - name: Set up QEMU
@@ -64,9 +61,9 @@ jobs:
           file: ${{ matrix.file }}
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/${{ matrix.image_name }}:${{ steps.get_latest_tag.outputs.tag }}
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.image_name }}:${{ env.LATEST_TAG }}
             ghcr.io/${{ github.repository_owner }}/${{ matrix.image_name }}:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image_name }}:${{ steps.get_latest_tag.outputs.tag }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image_name }}:${{ env.LATEST_TAG }}
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image_name }}:latest
           platforms: linux/amd64,linux/arm64
           target: ${{ matrix.target }}
